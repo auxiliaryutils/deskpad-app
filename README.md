@@ -12,6 +12,13 @@ No mouse, no dongle, no PC, no developer setup. You enable it once and it just w
 > **Status:** tested and working on a Pixel 9 Pro Fold — trackpad, cursor, drag, two-finger scroll,
 > keyboard typing, Enter-to-send, and lock/unlock are all confirmed on real hardware.
 
+<p align="center">
+  <img src="docs/screenshot.png" width="760"
+       alt="DeskPad on a phone — left: connected and ready with the on-screen keyboard; right: locked so no input reaches the desktop">
+</p>
+
+<p align="center"><sub>Left: connected (“Ready · display 3”) with the Gboard-style keyboard. Right: locked — no input reaches the desktop until you hold to unlock.</sub></p>
+
 ---
 
 ## What you need
