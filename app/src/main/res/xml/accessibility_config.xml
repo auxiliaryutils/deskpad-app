@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Capabilities are scoped to what the app actually uses:
+   - canPerformGestures        → the trackpad (cursor moves, taps, scroll, drag)
+   - canRetrieveWindowContent  → the keyboard relay: find + set the text of the focused desktop field
+   - flagRetrieveInteractiveWindows → reach the external display's windows to find that field
+  No accessibility event types are requested (onAccessibilityEvent is unused).
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault|flagRetrieveInteractiveWindows"
+    android:canPerformGestures="true"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="100" />

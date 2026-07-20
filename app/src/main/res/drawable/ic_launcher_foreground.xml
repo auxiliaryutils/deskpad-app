@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Mouse: a capsule outline with a scroll-wheel tick -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:pathData="M42,32 A12,12 0 0 1 66,32 L66,40 A12,12 0 0 1 42,40 L42,32 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M54,24 L54,30" />
+
+    <!-- Keyboard: body outline -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:pathData="M27,58 L81,58 A5,5 0 0 1 86,63 L86,79 A5,5 0 0 1 81,84 L27,84 A5,5 0 0 1 22,79 L22,63 A5,5 0 0 1 27,58 Z" />
+
+    <!-- Keyboard: keys + spacebar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27,63 l5,0 0,4 -5,0 Z M34,63 l5,0 0,4 -5,0 Z M41,63 l5,0 0,4 -5,0 Z M48,63 l5,0 0,4 -5,0 Z M55,63 l5,0 0,4 -5,0 Z M62,63 l5,0 0,4 -5,0 Z M69,63 l5,0 0,4 -5,0 Z M76,63 l5,0 0,4 -5,0 Z M27,70 l5,0 0,4 -5,0 Z M34,70 l5,0 0,4 -5,0 Z M41,70 l5,0 0,4 -5,0 Z M48,70 l5,0 0,4 -5,0 Z M55,70 l5,0 0,4 -5,0 Z M62,70 l5,0 0,4 -5,0 Z M69,70 l5,0 0,4 -5,0 Z M76,70 l5,0 0,4 -5,0 Z M42,77 l24,0 0,3 -24,0 Z" />
+</vector>
