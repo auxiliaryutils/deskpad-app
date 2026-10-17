@@ -56,6 +56,10 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // Never take focus: a touch on a focusable window moves global focus to it, and a desktop
+        // window that loses focus closes its caption menus (snap left/right, immersive, …) — so
+        // every touch on the pad dismissed them. Touches still arrive; only focus stays put.
+        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
         setContentView(buildUi())
     }
 
