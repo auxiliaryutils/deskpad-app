@@ -1,6 +1,7 @@
 package com.example.deskpad
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.view.Display
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -55,8 +57,30 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (ensureOnHandsetDisplay()) return
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(buildUi())
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        ensureOnHandsetDisplay()
+    }
+
+    private fun ensureOnHandsetDisplay(): Boolean {
+        val currentDisplayId = display?.displayId ?: Display.DEFAULT_DISPLAY
+        if (currentDisplayId != Display.DEFAULT_DISPLAY) {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+            val options = ActivityOptions.makeBasic().apply {
+                launchDisplayId = Display.DEFAULT_DISPLAY
+            }
+            startActivity(intent, options.toBundle())
+            finish()
+            return true
+        }
+        return false
     }
 
     override fun onResume() {
@@ -93,6 +117,7 @@ class MainActivity : Activity() {
         val ready = s.external != null
         statusDot.setBackgroundColor(if (ready) GOOD else WARN)
         statusText.text = when {
+            s.isMirrorMode -> "Mirror mode detected · enable Desktop mode in Settings"
             s.external == null -> "Enabled · connect a display (Desktop mode)"
             else -> "Ready · display ${s.external.id} · ${s.external.width}×${s.external.height}"
         }
