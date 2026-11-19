@@ -32,7 +32,7 @@ import com.example.deskpad.core.PadFrame
  */
 class DeskPadA11yService : AccessibilityService() {
 
-    data class State(val external: DisplayInfo?, val locked: Boolean)
+    data class State(val external: DisplayInfo?, val isMirrorMode: Boolean = false, val locked: Boolean = false)
 
     var onState: ((State) -> Unit)? = null
         set(value) { field = value; value?.invoke(currentState()) }
@@ -299,7 +299,10 @@ class DeskPadA11yService : AccessibilityService() {
         override fun onDisplayChanged(displayId: Int) = refreshDisplays()
     }
 
+    private val refreshRetryRunnable = Runnable { refreshDisplays() }
+
     private fun refreshDisplays() {
+        main.removeCallbacks(refreshRetryRunnable)
         val external = resolveExternal()
         targetDisplayId = external?.id ?: INVALID
         if (external != null) {
@@ -311,31 +314,66 @@ class DeskPadA11yService : AccessibilityService() {
             overlay.moveTo(p.x, p.y)
         } else {
             overlay.detach()
+            val hasExternalDisplay = displayManager.displays.any { it.displayId != Display.DEFAULT_DISPLAY }
+            if (hasExternalDisplay) {
+                main.postDelayed(refreshRetryRunnable, REFRESH_RETRY_MS)
+            }
         }
         notifyState()
+    }
+
+    private fun isDesktopDisplay(display: Display): Boolean {
+        if (display.displayId == Display.DEFAULT_DISPLAY) return false
+        val allWindows = runCatching { windowsOnAllDisplays }.getOrNull()
+        if (allWindows != null) {
+            for (i in 0 until allWindows.size()) {
+                if (allWindows.keyAt(i) == display.displayId && !allWindows.valueAt(i).isNullOrEmpty()) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun resolveExternal(): DisplayInfo? =
         resolver.pickExternal(
             displayManager.displays.map { d ->
                 val m = DisplayMetrics().also { @Suppress("DEPRECATION") d.getRealMetrics(it) }
-                DisplayInfo(d.displayId, m.widthPixels, m.heightPixels, d.displayId == Display.DEFAULT_DISPLAY)
+                DisplayInfo(
+                    id = d.displayId,
+                    width = m.widthPixels,
+                    height = m.heightPixels,
+                    isDefault = d.displayId == Display.DEFAULT_DISPLAY,
+                    isDesktop = isDesktopDisplay(d),
+                )
             }
         )
 
-    private fun currentState() = State(if (targetDisplayId == INVALID) null else resolveExternal(), lock.isLocked)
+    private fun currentState(): State {
+        val external = if (targetDisplayId == INVALID) null else resolveExternal()
+        val hasExternalDisplay = displayManager.displays.any { it.displayId != Display.DEFAULT_DISPLAY }
+        val isMirrorMode = hasExternalDisplay && external == null
+        return State(external, isMirrorMode, lock.isLocked)
+    }
 
     private fun notifyState() {
         val s = currentState()
         main.post { onState?.invoke(s) }
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        when (event?.eventType) {
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> refreshDisplays()
+        }
+    }
+
     override fun onInterrupt() {}
 
     companion object {
         private const val INVALID = -1
         private const val IME_ENTER_RETRY_MS = 180L
+        private const val REFRESH_RETRY_MS = 500L
         private val SUBMIT_HINTS = listOf("send", "search", "go", "submit", "post", "reply", "return")
 
         /** Set while the service is connected; the UI talks to it through this. */

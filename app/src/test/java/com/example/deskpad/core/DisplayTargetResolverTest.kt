@@ -27,4 +27,15 @@ class DisplayTargetResolverTest {
         val second = DisplayInfo(id = 3, width = 1280, height = 720, isDefault = false)
         assertEquals(first, r.pickExternal(listOf(phone, first, second)))
     }
+
+    @Test fun nullWhenExternalIsMirrorMode() {
+        val mirrored = DisplayInfo(id = 2, width = 1920, height = 1080, isDefault = false, isDesktop = false)
+        assertNull(r.pickExternal(listOf(phone, mirrored)))
+    }
+
+    @Test fun picksDesktopDisplayOverMirrorDisplay() {
+        val mirrored = DisplayInfo(id = 2, width = 1920, height = 1080, isDefault = false, isDesktop = false)
+        val desktop = DisplayInfo(id = 3, width = 1920, height = 1080, isDefault = false, isDesktop = true)
+        assertEquals(desktop, r.pickExternal(listOf(phone, mirrored, desktop)))
+    }
 }
